@@ -1,0 +1,12 @@
+Demo app to display my current run on a map, powered by owntracks, dropwizard, 
+and leaflet.js
+
+Currently: 
+-displays an index page with leaflet.js loaded but not initialized
+-responds to requests to /api/location with "beep boop"
+
+TODO:
+-connect to mqtt broker and subscribe to a topic with owntracks messages from phone
+-convert owntracks location messages to GeoJSON
+-javascript on index page to request current location from /api/location and add to map
+-healthcheck to confirm that the mqtt broker is online
