@@ -1,2 +1,12 @@
 server:
   rootPath: /api/*
+  
+  
+owntracksMqttClient:
+  clientID:
+  brokerUrl: tcp://sharkbaitextraordinaire.com:8883
+  username: jacob
+  password: 
+  sslProtocol: TLSv1
+  trustStore:
+  trustStorePassword:

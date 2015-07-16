@@ -1,8 +1,10 @@
 package com.sharkbaitextraordinaire.location;
 
+import com.sharkbaitextraordinaire.location.client.OwntracksMqttClient;
 import com.sharkbaitextraordinaire.location.resources.LocationUpdateResource;
 
 import io.dropwizard.Application;
+import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.assets.AssetsBundle;
@@ -28,7 +30,8 @@ public class LocationServerApplication extends Application<LocationServerConfigu
     @Override
     public void run(final LocationServerConfiguration configuration,
                     final Environment environment) {
-        // TODO: implement application
+    	final Managed owntracksMqttClient = new OwntracksMqttClient();
+    	environment.lifecycle().manage(owntracksMqttClient);
     	environment.jersey().register(new LocationUpdateResource());
     }
 

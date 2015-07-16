@@ -22,13 +22,6 @@
         <dropwizard.version>0.9.0-rc2</dropwizard.version>
         <mainClass>com.sharkbaitextraordinaire.location.LocationServerApplication</mainClass>
     </properties>
-    
-    <repositories>
-		<repository>
-			<id>Eclipse Paho Repository</id>
-			<url>https://repo.eclipse.org/content/repositories/paho-releases/</url>
-		</repository>
-	</repositories>
 
     <dependencies>
         <dependency>
@@ -36,21 +29,6 @@
             <artifactId>dropwizard-core</artifactId>
             <version>${dropwizard.version}</version>
         </dependency>
-        <dependency>
-            <groupId>io.dropwizard</groupId>
-            <artifactId>dropwizard-assets</artifactId>
-            <version>${dropwizard.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.dropwizard</groupId>
-            <artifactId>dropwizard-logging</artifactId>
-            <version>${dropwizard.version}</version>
-        </dependency>
-        <dependency>
-			<groupId>org.eclipse.paho</groupId>
-			<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
-			<version>1.0.2</version>
-		</dependency>
     </dependencies>
 
     <build>
