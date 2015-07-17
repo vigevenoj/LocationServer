@@ -7,8 +7,20 @@
 	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
 	<style media="screen" type="text/css">
-	#map { height: 180px; }
+	#map { height: 240px; }
 	</style>
+	<script>
+	function loadMap() {
+	var map = L.map('map').setView([45.523, -122.676], 13); // Roughly centered on Portland 
+	L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+	    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+	    maxZoom: 18,
+	    id: 'vigevenoj.53e008d2',
+	    accessToken: 'pk.eyJ1IjoidmlnZXZlbm9qIiwiYSI6IjMwYzk0YzZmMjFlNzU2MjFkOGU4OWIxNWU5YzBjZjg5In0.LbhD_uBPGZaDpagI0jNlSA'
+	}).addTo(map);
+	}
+	window.onload=loadMap;
+	</script>
 </head>
 <body>
 <div>Hello world!</div>
