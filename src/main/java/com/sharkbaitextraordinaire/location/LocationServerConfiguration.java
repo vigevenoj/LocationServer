@@ -1,10 +1,14 @@
 package com.sharkbaitextraordinaire.location;
 
-import io.dropwizard.Configuration;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.hibernate.validator.constraints.*;
-import javax.validation.constraints.*;
+import io.dropwizard.Configuration;
 
 public class LocationServerConfiguration extends Configuration {
-    // TODO: implement service configuration
+
+    @JsonProperty
+    private OwntracksMqttClientConfiguration owntracksMqttClient = new OwntracksMqttClientConfiguration();
+
+    public OwntracksMqttClientConfiguration getOwntracksMqttClientConfiguration() {
+        return owntracksMqttClient;
+    }
 }

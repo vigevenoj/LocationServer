@@ -1,26 +1,25 @@
 package com.sharkbaitextraordinaire.location.client;
 
-import java.util.Properties;
-
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.MqttCallback;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.eclipse.paho.client.mqttv3.MqttTopic;
+import com.sharkbaitextraordinaire.location.OwntracksMqttClientConfiguration;
+import io.dropwizard.lifecycle.Managed;
+import org.eclipse.paho.client.mqttv3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-import io.dropwizard.lifecycle.Managed;
+import java.util.Properties;
 
 public class OwntracksMqttClient implements MqttCallback, Managed {
 	
 	private final Logger LOGGER = LoggerFactory.getLogger(OwntracksMqttClient.class);
+
+    private OwntracksMqttClientConfiguration owntracksMqttClientConfiguration;
 	
 	MqttClient client;
 	MqttConnectOptions connectionOptions;
+
+    public OwntracksMqttClient(OwntracksMqttClientConfiguration owntracksMqttClientConfiguration){
+        this.owntracksMqttClientConfiguration = owntracksMqttClientConfiguration;
+    }
 
 	@Override
 	public void connectionLost(Throwable arg0) {
@@ -41,38 +40,39 @@ public class OwntracksMqttClient implements MqttCallback, Managed {
 	}
 	
 	public void start() {
-		String clientID = "";
-		String brokerUrl = "";
+
+		String clientID = owntracksMqttClientConfiguration.getClientID();
+		String brokerUrl = owntracksMqttClientConfiguration.getBrokerUrl();
 		
 		connectionOptions = new MqttConnectOptions();
 		connectionOptions.setKeepAliveInterval(30);
-		connectionOptions.setUserName("");
-		connectionOptions.setPassword("".toCharArray());
+		connectionOptions.setUserName(owntracksMqttClientConfiguration.getUserName());
+		connectionOptions.setPassword(owntracksMqttClientConfiguration.getPassword().toCharArray());
 		
 		Properties sslProps = new Properties();
-		sslProps.setProperty("com.ibm.ssl.protocol", "");
-		sslProps.setProperty("com.ibm.ssl.trustStore", "");
-		sslProps.setProperty("com.ibm.ssl.trustStorePassword", "");
+		sslProps.setProperty("com.ibm.ssl.protocol", owntracksMqttClientConfiguration.getSslProtocol());
+		sslProps.setProperty("com.ibm.ssl.trustStore", owntracksMqttClientConfiguration.getTrustStore());
+		sslProps.setProperty("com.ibm.ssl.trustStorePassword", owntracksMqttClientConfiguration.getTrustStorePassword());
 		
 		connectionOptions.setSSLProperties(sslProps);
 		
 		try {
 			client = new MqttClient(brokerUrl, clientID);
 			client.setCallback(this);
+            client.connect(connectionOptions);
+
+            if (client.isConnected()) {
+                LOGGER.warn("connected to mqtt broker for owntracks");
+            } else {
+                LOGGER.warn("NOT CONNECTED to mqtt broker");
+            }
+
+            MqttTopic topic = client.getTopic(owntracksMqttClientConfiguration.getTopic());
+
+            int subQoS = 0;
+            client.subscribe(topic.getName(), subQoS);
 		} catch (MqttException e) {
-			// TODO something
-		}
-		
-		MqttTopic topic = client.getTopic("");
-		
-		if (true) {
-			// TODO should probably have a shutdown method?
-			try {
-				int subQoS = 0;
-				client.subscribe(topic.getName(), subQoS);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			e.printStackTrace();
 		}
 	}
 	

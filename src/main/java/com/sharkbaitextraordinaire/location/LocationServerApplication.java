@@ -30,7 +30,7 @@ public class LocationServerApplication extends Application<LocationServerConfigu
     @Override
     public void run(final LocationServerConfiguration configuration,
                     final Environment environment) {
-    	final Managed owntracksMqttClient = new OwntracksMqttClient();
+    	final Managed owntracksMqttClient = new OwntracksMqttClient(configuration.getOwntracksMqttClientConfiguration());
     	environment.lifecycle().manage(owntracksMqttClient);
     	environment.jersey().register(new LocationUpdateResource());
     }

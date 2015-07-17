@@ -3,10 +3,11 @@ server:
   
   
 owntracksMqttClient:
-  clientID:
+  clientID: dropwizard
   brokerUrl: tcp://sharkbaitextraordinaire.com:8883
-  username: jacob
+  userName: jacob
   password: 
   sslProtocol: TLSv1
   trustStore:
   trustStorePassword:
+  topic: owntracks/nexus5/nexus5
