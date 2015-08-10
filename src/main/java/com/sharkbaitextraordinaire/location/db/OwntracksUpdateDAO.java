@@ -1,26 +1,28 @@
 package com.sharkbaitextraordinaire.location.db;
 
+import com.sharkbaitextraordinaire.location.core.OwntracksUpdate;
+import com.sharkbaitextraordinaire.location.core.OwntracksUpdateMapper;
+import org.skife.jdbi.v2.sqlobject.Bind;
+import org.skife.jdbi.v2.sqlobject.SqlQuery;
+import org.skife.jdbi.v2.sqlobject.SqlUpdate;
+import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapper;
+
 import java.util.List;
 
-import org.skife.jdbi.v2.sqlobject.SqlUpdate;
-import org.skife.jdbi.v2.sqlobject.SqlQuery;
-import org.skife.jdbi.v2.sqlobject.Bind;
-
-import com.sharkbaitextraordinaire.location.core.OwntracksUpdate;
-
+@RegisterMapper(OwntracksUpdateMapper.class)
 public interface OwntracksUpdateDAO {
 	
-	@SqlUpdate("create table owntracksupdates (_type varchar(10), lat varchar(12), lon varchar(12), acc smallint, tst bigint")
+	@SqlUpdate("create table owntracksupdates (_type varchar(10), lat varchar(12), lon varchar(12), acc varchar(8), tst bigint, batt varchar(8) )")
 	void createTableIfNotExists();
 	
-	@SqlQuery("select _type, lat, lon, acc, tst from owntracksupdates order by tst desc")
+	@SqlQuery("select _type, lat, lon, acc, tst, batt from owntracksupdates order by tst desc")
 	List<OwntracksUpdate> findAll();
 	
-	@SqlQuery("select _type, lat, lon, acc, tst from owntracksupdates order by tst desc limit 1")
+	@SqlQuery("select _type, lat, lon, acc, tst, batt from owntracksupdates order by tst desc limit 1")
 	OwntracksUpdate findLatest();
 	
-	@SqlUpdate("insert into owntracksupdates (_type, lat, lon, acc, tst) values (:_type, :lat, :lon, :acc, :tst)")
-	void insert(@Bind("_type") String _type, @Bind("lat") String lat, @Bind("lon") String lon, @Bind("acc") Short acc, @Bind("tst") Long tst);
-	
+	@SqlUpdate("insert into owntracksupdates (_type, lat, lon, acc, tst, batt) values (:_type, :lat, :lon, :acc, :tst, :batt)")
+	void insert(@Bind("_type") String _type, @Bind("lat") String lat, @Bind("lon") String lon, @Bind("acc") String acc, @Bind("tst") Long tst, @Bind("batt") String batt);
+
 	void close();
 }

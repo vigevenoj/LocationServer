@@ -1,17 +1,17 @@
 package com.sharkbaitextraordinaire.location;
 
-import org.skife.jdbi.v2.DBI;
-
 import com.sharkbaitextraordinaire.location.client.OwntracksMqttClient;
+import com.sharkbaitextraordinaire.location.client.OwntracksMqttClientHealthCheck;
 import com.sharkbaitextraordinaire.location.db.OwntracksUpdateDAO;
 import com.sharkbaitextraordinaire.location.resources.LocationUpdateResource;
-
+import com.sharkbaitextraordinaire.location.resources.OwntracksResource;
 import io.dropwizard.Application;
+import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import io.dropwizard.assets.AssetsBundle;
+import org.skife.jdbi.v2.DBI;
 
 
 public class LocationServerApplication extends Application<LocationServerConfiguration> {
@@ -35,12 +35,16 @@ public class LocationServerApplication extends Application<LocationServerConfigu
     @Override
     public void run(final LocationServerConfiguration configuration,
                     final Environment environment) {
-    	final Managed owntracksMqttClient = new OwntracksMqttClient(configuration.getOwntracksMqttClientConfiguration());
-    	environment.lifecycle().manage(owntracksMqttClient);
     	environment.jersey().register(new LocationUpdateResource());
-    	final DBI dbi = new DBIFactory().build(environment, configuration.getDataSourceFactory(), "db");
+    	final DBI dbi = new DBIFactory().build(environment, configuration.getDataSourceFactory(), "database");
     	final OwntracksUpdateDAO otdao = dbi.onDemand(OwntracksUpdateDAO.class);
-//    	environment.jersey().register(new OwntracksResource(dao));
+        otdao.createTableIfNotExists();
+        environment.jersey().register(new OwntracksResource(otdao));
+
+        final Managed owntracksMqttClient = new OwntracksMqttClient(configuration.getOwntracksMqttClientConfiguration(), otdao);
+        environment.lifecycle().manage(owntracksMqttClient);
+
+        environment.healthChecks().register("broker", new OwntracksMqttClientHealthCheck(((OwntracksMqttClient)owntracksMqttClient)));
     }
 
 }

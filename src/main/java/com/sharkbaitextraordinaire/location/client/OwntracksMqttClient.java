@@ -1,6 +1,9 @@
 package com.sharkbaitextraordinaire.location.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sharkbaitextraordinaire.location.OwntracksMqttClientConfiguration;
+import com.sharkbaitextraordinaire.location.core.OwntracksUpdate;
+import com.sharkbaitextraordinaire.location.db.OwntracksUpdateDAO;
 import io.dropwizard.lifecycle.Managed;
 import org.eclipse.paho.client.mqttv3.*;
 import org.slf4j.Logger;
@@ -13,31 +16,50 @@ public class OwntracksMqttClient implements MqttCallback, Managed {
 	private final Logger LOGGER = LoggerFactory.getLogger(OwntracksMqttClient.class);
 
     private OwntracksMqttClientConfiguration owntracksMqttClientConfiguration;
+    private OwntracksUpdateDAO owntracksUpdateDAO;
 	
 	MqttClient client;
 	MqttConnectOptions connectionOptions;
 
-    public OwntracksMqttClient(OwntracksMqttClientConfiguration owntracksMqttClientConfiguration){
+    public OwntracksMqttClient(OwntracksMqttClientConfiguration owntracksMqttClientConfiguration, OwntracksUpdateDAO dao){
         this.owntracksMqttClientConfiguration = owntracksMqttClientConfiguration;
+        this.owntracksUpdateDAO = dao;
+    }
+
+    public MqttClient getClient() {
+        return client;
     }
 
 	@Override
 	public void connectionLost(Throwable arg0) {
-		// fail healthcheck
+        LOGGER.error("MQTT broker connection lost");
 	}
 
 	@Override
 	public void deliveryComplete(IMqttDeliveryToken arg0) {
 		// no-op because we don't deliver anything
-		
+
 	}
 
 	@Override
 	public void messageArrived(String topicString, MqttMessage message) throws Exception {
-		System.out.println(new String(message.getPayload()));
-		// should log message arrival
-		// Also put message into global scope so we can fetch latest message when requested
-	}
+		String payload = new String(message.getPayload());
+        // should log message arrival
+        LOGGER.error("new message from broker:");
+        LOGGER.error(payload);
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            OwntracksUpdate update = mapper.readValue(payload, OwntracksUpdate.class);
+            LOGGER.error(update.toString());
+            owntracksUpdateDAO.insert(update.get_type(), update.getLat(), update.getLon(), update.getAcc(), update.getTst(), update.getBatt());
+
+            OwntracksUpdate latest = owntracksUpdateDAO.findLatest();
+            LOGGER.error(latest.getLon() + ", " + latest.getLat());
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 	
 	public void start() {
 
@@ -62,15 +84,17 @@ public class OwntracksMqttClient implements MqttCallback, Managed {
             client.connect(connectionOptions);
 
             if (client.isConnected()) {
-                LOGGER.warn("connected to mqtt broker for owntracks");
+                LOGGER.error("connected to mqtt broker for owntracks");
+                MqttTopic topic = client.getTopic(owntracksMqttClientConfiguration.getTopic());
+
+                int subQoS = 0;
+                client.subscribe(topic.getName(), subQoS);
+
             } else {
-                LOGGER.warn("NOT CONNECTED to mqtt broker");
+                LOGGER.error("NOT CONNECTED to mqtt broker");
             }
 
-            MqttTopic topic = client.getTopic(owntracksMqttClientConfiguration.getTopic());
 
-            int subQoS = 0;
-            client.subscribe(topic.getName(), subQoS);
 		} catch (MqttException e) {
 			e.printStackTrace();
 		}
@@ -79,7 +103,7 @@ public class OwntracksMqttClient implements MqttCallback, Managed {
 	public void stop() {
 		try {
 			client.disconnect();
-			client.close();	
+			client.close();
 		} catch (MqttException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

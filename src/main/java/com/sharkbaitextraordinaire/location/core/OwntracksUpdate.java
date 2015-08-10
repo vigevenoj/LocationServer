@@ -7,8 +7,19 @@ public class OwntracksUpdate {
 	String lon;
 	String acc;
 	String batt;
-	String tst;
+	Long tst;
 	String event;
+
+    public OwntracksUpdate() { }
+
+    public OwntracksUpdate(String _type, String lat, String lon, String acc, String batt, Long tst) {
+        this._type = _type;
+        this.lat = lat;
+        this.lon = lon;
+        this.acc = acc;
+        this.batt = batt;
+        this.tst = tst;
+    }
 	
 	public String get_type() {
 		return _type;
@@ -50,11 +61,11 @@ public class OwntracksUpdate {
 		this.batt = batt;
 	}
 
-	public String getTst() {
+	public Long getTst() {
 		return tst;
 	}
 
-	public void setTst(String tst) {
+	public void setTst(Long tst) {
 		this.tst = tst;
 	}
 
