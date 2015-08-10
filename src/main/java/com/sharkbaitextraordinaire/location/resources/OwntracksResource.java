@@ -5,6 +5,8 @@ import com.sharkbaitextraordinaire.location.db.OwntracksUpdateDAO;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 @Path(value = "/rawupdates")
@@ -16,11 +18,13 @@ public class OwntracksResource {
         this.otdao = otdao;
     }
 
+    @Produces(MediaType.APPLICATION_JSON)
     @GET
     public List<OwntracksUpdate> getAllUpdates() {
         return otdao.findAll();
     }
 
+    @Produces(MediaType.APPLICATION_JSON)
     @GET @Path("/latest")
 	public OwntracksUpdate getLatestUpdate(){
 		return otdao.findLatest();
