@@ -8,7 +8,7 @@ public class OwntracksUpdate {
 	String acc;
 	String batt;
 	Long tst;
-	String event;
+//	String event;
 
     public OwntracksUpdate() { }
 
@@ -69,13 +69,13 @@ public class OwntracksUpdate {
 		this.tst = tst;
 	}
 
-	public String getEvent() {
-		return event;
-	}
-
-	public void setEvent(String event) {
-		this.event = event;
-	}
+//	public String getEvent() {
+//		return event;
+//	}
+//
+//	public void setEvent(String event) {
+//		this.event = event;
+//	}
 
 	// example update
 	// {"_type": "location", "lat": "45.5367495", "lon": "-122.6217988", "tst": "1437014122", "acc": "50.0", "batt": "81", "event": "enter"}
