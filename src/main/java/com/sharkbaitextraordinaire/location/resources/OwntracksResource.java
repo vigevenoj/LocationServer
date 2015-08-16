@@ -23,6 +23,12 @@ public class OwntracksResource {
     public List<OwntracksUpdate> getAllUpdates() {
         return otdao.findAll();
     }
+    
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public List<OwntracksUpdate> getUpdatesSince(Long tst) {
+    	return otdao.findSinceTimestamp(tst);
+    }
 
     @Produces(MediaType.APPLICATION_JSON)
     @GET @Path("/latest")
