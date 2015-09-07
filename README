@@ -3,10 +3,11 @@ and leaflet.js
 
 Currently: 
 -displays an index page with leaflet.js loaded but not initialized
--responds to requests to /api/location with "beep boop"
+-responds to requests to /api/location with a default location of 45.523, -122.676 or "beep boop" if an error occurs
+-responds to requests to /api/rawupates with raw owntracks mqtt messages since application startup
+  -responds to requests to /api/rawupdates/since (long tst) with owntracks messages from broker since epoch timestamp (only messages after application startup)
+  -responds to requests to /api/rawupdates/latest with latest owntracks message from broker
 
 TODO:
--connect to mqtt broker and subscribe to a topic with owntracks messages from phone
 -convert owntracks location messages to GeoJSON
 -javascript on index page to request current location from /api/location and add to map
--healthcheck to confirm that the mqtt broker is online
