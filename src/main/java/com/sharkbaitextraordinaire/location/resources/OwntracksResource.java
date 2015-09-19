@@ -6,6 +6,7 @@ import com.sharkbaitextraordinaire.location.db.OwntracksUpdateDAO;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
@@ -25,8 +26,8 @@ public class OwntracksResource {
     }
     
     @Produces(MediaType.APPLICATION_JSON)
-    @GET
-    public List<OwntracksUpdate> getUpdatesSince(Long tst) {
+    @GET @Path("/since/{tst}") 
+    public List<OwntracksUpdate> getUpdatesSince(@PathParam("tst") Long tst ) {
     	return otdao.findSinceTimestamp(tst);
     }
 
