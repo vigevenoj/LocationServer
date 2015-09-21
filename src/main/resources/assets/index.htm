@@ -11,16 +11,52 @@
 	#map { height: 240px; }
 	</style>
 	<script>
-  function loadMap() {
-	window.map = new L.map('map').setView([45.523, -122.676], 13); // Roughly centered on Portland 
-	L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-	    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-	    maxZoom: 18,
-	    id: 'vigevenoj.53e008d2',
-	    accessToken: 'pk.eyJ1IjoidmlnZXZlbm9qIiwiYSI6IjMwYzk0YzZmMjFlNzU2MjFkOGU4OWIxNWU5YzBjZjg5In0.LbhD_uBPGZaDpagI0jNlSA'
-	}).addTo(map);
-	}
-	window.onload=loadMap;
+    // Some global state
+    $.maps = new Object();
+    $.maps.stack = new Array(); // stack of points
+    $.maps.latestPoint = new Object(); // this is the latest point so we don't have to pop/push in order to peek
+
+    function addPointToMap(point) {
+      // add point to map
+      L.marker([point.lat, point.lon]).addTo(map);
+    }
+
+    function checkLatestPoint() {
+      timestamp = $.maps.latestPoint.tst;
+      $.getJSON("/api/rawupdates/since/" + timestamp, function( response ) {
+        if (typeof response !== 'undefined' && response.length > 0) {
+          response.forEach(function(entry) {
+            console.log( entry );
+            $.maps.stack.push(entry);
+            $.maps.latestPoint = entry;
+            addPointToMap(entry);
+          });
+          } else {
+          // empty array means no new updates, log it
+          console.log ("no updates since " + timestamp);
+        }
+      });
+    }
+    
+    function getLatestPoint() {
+      $.getJSON("/api/rawupdates/latest", 
+      function(response) {
+        if (typeof response !== 'undefined') { 
+          console.log(response.lat + " " + response.lon ) 
+        }
+      });
+    }
+
+    function loadMap() {
+      window.map = new L.map('map').setView([45.523, -122.676], 13); // Roughly centered on Portland 
+      L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        maxZoom: 18,
+        id: 'vigevenoj.53e008d2',
+        accessToken: 'pk.eyJ1IjoidmlnZXZlbm9qIiwiYSI6IjMwYzk0YzZmMjFlNzU2MjFkOGU4OWIxNWU5YzBjZjg5In0.LbhD_uBPGZaDpagI0jNlSA'
+      }).addTo(map);
+    }
+    window.onload=loadMap;
 
 	</script>
 </head>
