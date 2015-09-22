@@ -43,6 +43,10 @@
       function(response) {
         if (typeof response !== 'undefined') { 
           console.log(response.lat + " " + response.lon ) 
+          $.maps.stack.push(response);
+          $.maps.latestPoint = response;
+          addPointToMap(response);
+          map.setView([$.maps.latestPoint.lat, $.maps.latestPoint.lon], 13);
         }
       });
     }
@@ -55,8 +59,9 @@
         id: 'vigevenoj.53e008d2',
         accessToken: 'pk.eyJ1IjoidmlnZXZlbm9qIiwiYSI6IjMwYzk0YzZmMjFlNzU2MjFkOGU4OWIxNWU5YzBjZjg5In0.LbhD_uBPGZaDpagI0jNlSA'
       }).addTo(map);
+      getLatestPoint();
     }
-    window.onload=loadMap;
+    $(window).load(loadMap);
 
 	</script>
 </head>
