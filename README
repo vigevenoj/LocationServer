@@ -2,12 +2,13 @@ Demo app to display my current run on a map, powered by owntracks, dropwizard,
 and leaflet.js
 
 Currently: 
--displays an index page with leaflet.js loaded but not initialized
+-displays an index page with a leaflet.js map centered roughly on Portland, OR
+-has javascript to load latest location and re-center map onto latest location received from broker
 -responds to requests to /api/location with a default location of 45.523, -122.676 or "beep boop" if an error occurs
 -responds to requests to /api/rawupates with raw owntracks mqtt messages since application startup
-  -responds to requests to /api/rawupdates/since (long tst) with owntracks messages from broker since epoch timestamp (only messages after application startup)
+  -responds to requests to /api/rawupdates/since/{tst} with owntracks messages from broker since epoch timestamp (only messages after application startup)
   -responds to requests to /api/rawupdates/latest with latest owntracks message from broker
 
 TODO:
 -convert owntracks location messages to GeoJSON
--javascript on index page to request current location from /api/location and add to map
+-loop to check updated location every 30 seconds
