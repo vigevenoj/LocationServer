@@ -8,7 +8,7 @@
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 	<style media="screen" type="text/css">
-	#map { height: 240px; }
+	#map { height: 300px; }
 	</style>
 	<script>
     // Some global state
@@ -22,27 +22,30 @@
     }
 
     function checkLatestPoint() {
+      //console.log("Checking latest point");
       timestamp = $.maps.latestPoint.tst;
-      $.getJSON("/api/rawupdates/since/" + timestamp, function( response ) {
-        if (typeof response !== 'undefined' && response.length > 0) {
-          response.forEach(function(entry) {
-            console.log( entry );
-            $.maps.stack.push(entry);
-            $.maps.latestPoint = entry;
-            addPointToMap(entry);
-          });
-          } else {
-          // empty array means no new updates, log it
-          console.log ("no updates since " + timestamp);
-        }
-      });
+      if (typeof timestamp !== 'undefined') {
+        $.getJSON("/api/rawupdates/since/" + timestamp, function( response ) {
+          if (typeof response !== 'undefined' && response.length > 0) {
+            response.forEach(function(entry) {
+              $.maps.stack.push(entry);
+              $.maps.latestPoint = entry;
+              //console.log("Added " + timestamp + " to map");
+              addPointToMap(entry);
+            });
+            } else {
+            // empty array means no new updates, log it
+            //console.log ("no updates since " + timestamp);
+          }
+        });
+      }
     }
     
     function getLatestPoint() {
       $.getJSON("/api/rawupdates/latest", 
       function(response) {
         if (typeof response !== 'undefined') { 
-          console.log(response.lat + " " + response.lon ) 
+          //console.log(response.lat + " " + response.lon ) 
           $.maps.stack.push(response);
           $.maps.latestPoint = response;
           addPointToMap(response);
@@ -60,6 +63,8 @@
         accessToken: 'pk.eyJ1IjoidmlnZXZlbm9qIiwiYSI6IjMwYzk0YzZmMjFlNzU2MjFkOGU4OWIxNWU5YzBjZjg5In0.LbhD_uBPGZaDpagI0jNlSA'
       }).addTo(map);
       getLatestPoint();
+      // add a callback with timeout to call checkLatestPoint every 30 seconds
+      setInterval(checkLatestPoint,30000);
     }
     $(window).load(loadMap);
 
