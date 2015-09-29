@@ -1,5 +1,7 @@
 package com.sharkbaitextraordinaire.location.core;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 public class OwntracksUpdate {
 	
 	String _type;
@@ -12,6 +14,7 @@ public class OwntracksUpdate {
 
     public OwntracksUpdate() { }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public OwntracksUpdate(String _type, String lat, String lon, String acc, String batt, Long tst) {
         this._type = _type;
         this.lat = lat;
