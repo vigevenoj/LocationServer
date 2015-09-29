@@ -21,7 +21,7 @@ public interface OwntracksUpdateDAO {
 	@SqlQuery("select _type, lat, lon, acc, tst, batt from owntracksupdates order by tst desc limit 1")
 	OwntracksUpdate findLatest();
 	
-	@SqlQuery("select _type, lat, lon, acc, tst, batt from owntracksupdates where tst >= :tst")
+	@SqlQuery("select _type, lat, lon, acc, tst, batt from owntracksupdates where tst > :tst")
 	List<OwntracksUpdate> findSinceTimestamp(@Bind("tst") Long tst);
 	
 	@SqlUpdate("insert into owntracksupdates (_type, lat, lon, acc, tst, batt) values (:_type, :lat, :lon, :acc, :tst, :batt)")
