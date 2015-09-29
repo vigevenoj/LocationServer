@@ -1,5 +1,6 @@
 package com.sharkbaitextraordinaire.location.client;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sharkbaitextraordinaire.location.OwntracksMqttClientConfiguration;
 import com.sharkbaitextraordinaire.location.core.OwntracksUpdate;
@@ -50,6 +51,7 @@ public class OwntracksMqttClient implements MqttCallback, Managed {
 
         try {
             ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             OwntracksUpdate update = mapper.readValue(payload, OwntracksUpdate.class);
             LOGGER.error(update.toString());
             owntracksUpdateDAO.insert(update.get_type(), update.getLat(), update.getLon(), update.getAcc(), update.getTst(), update.getBatt());
