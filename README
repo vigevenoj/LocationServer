@@ -8,7 +8,7 @@ Currently:
 -responds to requests to /api/rawupates with raw owntracks mqtt messages since application startup
   -responds to requests to /api/rawupdates/since/{tst} with owntracks messages from broker since epoch timestamp (only messages after application startup)
   -responds to requests to /api/rawupdates/latest with latest owntracks message from broker
+  -loops to check updated location every 30 seconds and adds new points to map
 
 TODO:
 -convert owntracks location messages to GeoJSON
--loop to check updated location every 30 seconds
