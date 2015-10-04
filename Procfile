@@ -1,0 +1,1 @@
+web:    java $JAVA_OPTS -Ddw.server.connector.port=$PORT -Ddw.owntracksMqttClient.password=$CLIENTPASSWORD -Ddw.owntracksMqttClient.userName=$USERNAME -Ddw.owntracksMqttClient.trustStore=sbe-mqtt.keystore -Ddw.owntracksMqttClient.trustStorePassword=$TRUSTSTOREPASS -jar target/LocationServer-1.0-SNAPSHOT.jar server heroku.yml
