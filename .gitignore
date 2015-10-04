@@ -1,4 +1,3 @@
-*.keystore
 .idea
 target
 atlassian-ide-plugin.xml

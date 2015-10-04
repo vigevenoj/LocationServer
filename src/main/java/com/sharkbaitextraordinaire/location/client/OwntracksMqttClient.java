@@ -10,7 +10,19 @@ import org.eclipse.paho.client.mqttv3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
 import java.util.Properties;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 
 public class OwntracksMqttClient implements MqttCallback, Managed {
 	
@@ -73,12 +85,39 @@ public class OwntracksMqttClient implements MqttCallback, Managed {
 		connectionOptions.setUserName(owntracksMqttClientConfiguration.getUserName());
 		connectionOptions.setPassword(owntracksMqttClientConfiguration.getPassword().toCharArray());
 		
-		Properties sslProps = new Properties();
-		sslProps.setProperty("com.ibm.ssl.protocol", owntracksMqttClientConfiguration.getSslProtocol());
-		sslProps.setProperty("com.ibm.ssl.trustStore", owntracksMqttClientConfiguration.getTrustStore());
-		sslProps.setProperty("com.ibm.ssl.trustStorePassword", owntracksMqttClientConfiguration.getTrustStorePassword());
+		try {
+			
+			InputStream truststoreInput = Thread.currentThread().getContextClassLoader().getResourceAsStream(owntracksMqttClientConfiguration.getTrustStore());
+			setSSLFactories(truststoreInput);
+			truststoreInput.close();
+		 
+//			MqttConnectOptions options = new MqttConnectOptions();
+//			options.setSocketFactory(sslContext.getSocketFactory());
+			connectionOptions.setSocketFactory(SSLContext.getDefault().getSocketFactory());
+		} catch (NoSuchAlgorithmException e1) {
+			// TODO Auto-generated catch block
+			LOGGER.error("No such algorithm exception", e1);
+		} catch (KeyManagementException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (KeyStoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (CertificateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
-		connectionOptions.setSSLProperties(sslProps);
+//		Properties sslProps = new Properties();
+//		sslProps.setProperty("com.ibm.ssl.protocol", owntracksMqttClientConfiguration.getSslProtocol());
+//		sslProps.setProperty("com.ibm.ssl.trustStore", owntracksMqttClientConfiguration.getTrustStore());
+//		sslProps.setProperty("com.ibm.ssl.trustStorePassword", owntracksMqttClientConfiguration.getTrustStorePassword());
+//		
+//		connectionOptions.setSSLProperties(sslProps);
+		
 		
 		try {
 			client = new MqttClient(brokerUrl, clientID);
@@ -112,4 +151,20 @@ public class OwntracksMqttClient implements MqttCallback, Managed {
 		}
 		
 	}
+	
+	private void setSSLFactories(InputStream trustStream) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, KeyManagementException {
+		KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+		char[] trustStorePassword = owntracksMqttClientConfiguration.getTrustStorePassword().toCharArray();
+		trustStore.load(trustStream, null);
+		
+		TrustManagerFactory trustFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+		trustFactory.init(trustStore);
+		
+		TrustManager[] trustManagers = trustFactory.getTrustManagers();
+		
+		SSLContext sslContext = SSLContext.getInstance("SSL");
+		sslContext.init(null, trustManagers, null);
+		SSLContext.setDefault(sslContext);
+	}
+	
 }
