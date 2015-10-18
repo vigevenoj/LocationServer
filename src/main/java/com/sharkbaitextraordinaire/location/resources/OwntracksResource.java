@@ -1,5 +1,6 @@
 package com.sharkbaitextraordinaire.location.resources;
 
+import com.google.inject.Inject;
 import com.sharkbaitextraordinaire.location.core.OwntracksUpdate;
 import com.sharkbaitextraordinaire.location.db.OwntracksUpdateDAO;
 
@@ -15,6 +16,7 @@ public class OwntracksResource {
 
     private OwntracksUpdateDAO otdao;
 
+    @Inject
     public OwntracksResource(OwntracksUpdateDAO otdao) {
         this.otdao = otdao;
     }

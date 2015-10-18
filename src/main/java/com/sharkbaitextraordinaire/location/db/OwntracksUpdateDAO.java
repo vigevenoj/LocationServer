@@ -26,6 +26,9 @@ public interface OwntracksUpdateDAO {
 	
 	@SqlUpdate("insert into owntracksupdates (_type, lat, lon, acc, tst, batt) values (:_type, :lat, :lon, :acc, :tst, :batt)")
 	void insert(@Bind("_type") String _type, @Bind("lat") String lat, @Bind("lon") String lon, @Bind("acc") String acc, @Bind("tst") Long tst, @Bind("batt") String batt);
+	
+	@SqlUpdate("delete from owntracksupdates")
+	void deleteAll();
 
 	void close();
 }

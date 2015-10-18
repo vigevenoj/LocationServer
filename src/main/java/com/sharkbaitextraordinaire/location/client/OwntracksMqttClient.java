@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sharkbaitextraordinaire.location.OwntracksMqttClientConfiguration;
 import com.sharkbaitextraordinaire.location.core.OwntracksUpdate;
+import com.sharkbaitextraordinaire.location.db.ManagementDAO;
 import com.sharkbaitextraordinaire.location.db.OwntracksUpdateDAO;
 import io.dropwizard.lifecycle.Managed;
 import org.eclipse.paho.client.mqttv3.*;
@@ -30,13 +31,15 @@ public class OwntracksMqttClient implements MqttCallback, Managed {
 
     private OwntracksMqttClientConfiguration owntracksMqttClientConfiguration;
     private OwntracksUpdateDAO owntracksUpdateDAO;
+    private ManagementDAO mgmtdao;
 	
 	MqttClient client;
 	MqttConnectOptions connectionOptions;
 
-    public OwntracksMqttClient(OwntracksMqttClientConfiguration owntracksMqttClientConfiguration, OwntracksUpdateDAO dao){
+    public OwntracksMqttClient(OwntracksMqttClientConfiguration owntracksMqttClientConfiguration, OwntracksUpdateDAO dao, ManagementDAO mgmtdao){
         this.owntracksMqttClientConfiguration = owntracksMqttClientConfiguration;
         this.owntracksUpdateDAO = dao;
+        this.mgmtdao = mgmtdao;
     }
 
     public MqttClient getClient() {
@@ -56,6 +59,10 @@ public class OwntracksMqttClient implements MqttCallback, Managed {
 
 	@Override
 	public void messageArrived(String topicString, MqttMessage message) throws Exception {
+		
+		if (!mgmtdao.trackingEnabled()) {
+			return;
+		}
 		String payload = new String(message.getPayload());
         // should log message arrival
         LOGGER.error("new message from broker:");

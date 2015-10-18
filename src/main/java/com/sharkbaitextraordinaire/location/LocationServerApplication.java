@@ -2,9 +2,12 @@ package com.sharkbaitextraordinaire.location;
 
 import com.sharkbaitextraordinaire.location.client.OwntracksMqttClient;
 import com.sharkbaitextraordinaire.location.client.OwntracksMqttClientHealthCheck;
+import com.sharkbaitextraordinaire.location.db.ManagementDAO;
 import com.sharkbaitextraordinaire.location.db.OwntracksUpdateDAO;
 import com.sharkbaitextraordinaire.location.resources.LocationUpdateResource;
 import com.sharkbaitextraordinaire.location.resources.OwntracksResource;
+import com.sharkbaitextraordinaire.location.resources.management.ManagementResource;
+
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.jdbi.DBIFactory;
@@ -35,13 +38,18 @@ public class LocationServerApplication extends Application<LocationServerConfigu
     @Override
     public void run(final LocationServerConfiguration configuration,
                     final Environment environment) {
-    	environment.jersey().register(new LocationUpdateResource());
     	final DBI dbi = new DBIFactory().build(environment, configuration.getDataSourceFactory(), "database");
     	final OwntracksUpdateDAO otdao = dbi.onDemand(OwntracksUpdateDAO.class);
         otdao.createTableIfNotExists();
+        final ManagementDAO mgmtdao = dbi.onDemand(ManagementDAO.class);
+        mgmtdao.createTableIfNotExists();
+        
+        
+        environment.jersey().register(new LocationUpdateResource());
         environment.jersey().register(new OwntracksResource(otdao));
+        environment.jersey().register(new ManagementResource(otdao, mgmtdao));
 
-        final Managed owntracksMqttClient = new OwntracksMqttClient(configuration.getOwntracksMqttClientConfiguration(), otdao);
+        final Managed owntracksMqttClient = new OwntracksMqttClient(configuration.getOwntracksMqttClientConfiguration(), otdao, mgmtdao);
         environment.lifecycle().manage(owntracksMqttClient);
 
         environment.healthChecks().register("broker", new OwntracksMqttClientHealthCheck(((OwntracksMqttClient)owntracksMqttClient)));
