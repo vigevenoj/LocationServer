@@ -12,7 +12,7 @@ import io.dropwizard.db.DataSourceFactory;
 
 public class LocationServerConfiguration extends Configuration {
 
-    @JsonProperty
+    @JsonProperty("owntracksMqttClient")
     private OwntracksMqttClientConfiguration owntracksMqttClient = new OwntracksMqttClientConfiguration();
 
     public OwntracksMqttClientConfiguration getOwntracksMqttClientConfiguration() {
