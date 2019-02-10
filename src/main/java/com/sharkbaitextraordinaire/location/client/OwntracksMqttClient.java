@@ -61,6 +61,7 @@ public class OwntracksMqttClient implements MqttCallback, Managed {
 	public void messageArrived(String topicString, MqttMessage message) throws Exception {
 		
 		if (!mgmtdao.trackingEnabled()) {
+			LOGGER.warn("tracking is disabled");
 			return;
 		}
 		String payload = new String(message.getPayload());
