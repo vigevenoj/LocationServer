@@ -24,7 +24,7 @@ public class LocationUpdateResource {
 		geometry.put("type", "Point");
 		geometry.put("coordinates", new double[] { 45.523, -122.676 });
 		geojson.put("geometry", geometry);
-		geojson.put("properties", "");
+		geojson.put("properties", properties);
 		
 		try {
 			return mapper.writeValueAsString(geojson);
