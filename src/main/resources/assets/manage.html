@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Management</title>
+    <meta charset="utf-8" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <style type="text/css">
+      #formcontainer { margin-top: 20px; margin-left: 20px; }
+      ul.input-list { list-style: none; margin 0 -10px; padding 0; }
+      input { border: none; margin-left: 20px; margin-bottom: 30px; padding-right: 50px; appearance: none; 
+      border-bottom: solid 2px #c9c9c9; transition: border 0.3s; }
+      input:focus, input.focus { border-bottom: solid 2px #969696; }
+      label { display: inline-block; width: 100px; }
+    </style>
+    <script>
+      function validUsernameAndPassword() { 
+        return $("username").val().length > 0 && $("password").val().length > 0
+      }
+      function getUsername() {
+        return $("username").val();
+      }
+      function getPassword() {
+        return $("password").val();
+      }
+      function clearTrackedPoints() {
+        if( validUsernameAndPassword() ) {
+          $.ajax({ 
+            type: "DELETE",
+            url: "/api/manage/clearTracking",
+            async: false,
+            headers: { "Authorization": "Basic " + btoa(getUsername(), + ":" + getPassword()) },
+            data: '{ "clear" }',
+            success: function() { alert('Tracked points cleared'); }
+          });
+      }
+      }
+      function enableTracking() {
+        if( validUsernameAndPassword() ) {
+          $.ajax({
+            type: "PUT",
+            url: "/api/manage/tracking",
+            headers: { "Authorization": "Basic " + btoa(getUsername(), + ":" + getPassword()) },
+            data: '{ "enable" }',
+            success: function() { alert('Enabled location tracking'); }
+          });
+        }
+      }
+      function disableTracking() {
+        if( validUsernameAndPassword() ) {
+          $.ajax({
+            type: "DELETE",
+            url: "/api/manage/tracking",
+            headers: { "Authorization": "Basic " + btoa(getUsername(), + ":" + getPassword()) },
+            success: function() { alert('Disabled location tracking'); }
+          });
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <h2>Management</h2>
+    <ul class="formcontainer input-list"> 
+      <li>
+      <label>Username</label>
+      <input name="username" type="text"></input>
+      </li>
+      <li>
+      <label>Password</label>
+      <input name="password" type="password"></input>
+      </li>
+    </ul>
+    <h2>Actions</h2>
+    <ul class="formcontainer input-list">
+      <li>
+      <ul class="input-list">
+        <li>
+        <label>Enabled</label><input name="tracking" value="enabled" type="radio"></input>
+        <label>Disabled</label><input name="tracking" value="disabled" type="radio"></input>
+        </li>
+      </ul>
+      </li>
+      <li>
+      <label>Clear Tracked Points</label><input type="button" name="cleartracking"></input>
+    </ul>
+  </body>
+</html>

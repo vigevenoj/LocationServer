@@ -15,4 +15,4 @@ owntracksMqttClient:
   sslProtocol: tlsv1
   trustStore:
   trustStorePassword:
-  topic: owntracks/nexus5/nexus5
+  topic: owntracks/jacob/nexus5
